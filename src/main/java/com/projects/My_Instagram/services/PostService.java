@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static com.projects.My_Instagram.Constants.ExceptionMessages.*;
+
 @Service
 public class PostService {
     private final PostRepository postRepository;
@@ -26,7 +28,7 @@ public class PostService {
     }
 
     private User getUser(String username) {
-        return userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found"));
+        return userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
     }
 
     public Post createPost(PostRequest postRequest) throws RuntimeException {
@@ -47,7 +49,7 @@ public class PostService {
         Optional<Post> post = postRepository.findById(post_id);
 
         if(post.isEmpty()){
-            throw new PostNotFoundException("Post not found");
+            throw new PostNotFoundException(POST_NOT_FOUND.getMessage());
         }
 
         postRepository.deleteById(post_id);

@@ -6,8 +6,9 @@ import com.projects.My_Instagram.exceptions.UserNotFoundException;
 import com.projects.My_Instagram.repositories.UserRepository;
 import com.projects.My_Instagram.models.User;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
+
+import static com.projects.My_Instagram.Constants.ExceptionMessages.*;
 
 @Service
 public class UserService {
@@ -30,7 +31,7 @@ public class UserService {
         if (username != null) {
             boolean exists = userRepository.existsByUsername(username);
             if (exists) {
-                throw new UserNameExistsException("Username already taken");
+                throw new UserNameExistsException(USER_NAME_EXISTS.getMessage());
             }
             user.setUsername(username);
         }
@@ -42,7 +43,7 @@ public class UserService {
     }
 
     private User getUser(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found"));
+        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
     }
 
     public List<User> getAllUsers() {
