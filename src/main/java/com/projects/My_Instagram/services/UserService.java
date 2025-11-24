@@ -2,6 +2,7 @@ package com.projects.My_Instagram.services;
 
 import com.projects.My_Instagram.DTOs.UserRequest;
 import com.projects.My_Instagram.exceptions.UserNameExistsException;
+import com.projects.My_Instagram.exceptions.UserNameNullException;
 import com.projects.My_Instagram.exceptions.UserNotFoundException;
 import com.projects.My_Instagram.repositories.UserRepository;
 import com.projects.My_Instagram.models.User;
@@ -34,8 +35,10 @@ public class UserService {
                 throw new UserNameExistsException(USER_NAME_EXISTS.getMessage());
             }
             user.setUsername(username);
+            return;
         }
 
+        throw new UserNameNullException(USER_NAME_NULL.getMessage());
     }
 
     public User getUserById(Long id) {
@@ -61,6 +64,9 @@ public class UserService {
     }
 
     public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND.getMessage()));
+        userRepository.delete(user);
     }
+
 }

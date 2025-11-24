@@ -13,6 +13,14 @@ public class User {
     private String fullName;
     private String profilePicUrl;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getProfilePicUrl() {
         return profilePicUrl;
     }
