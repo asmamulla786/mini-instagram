@@ -1,6 +1,6 @@
 package com.projects.My_Instagram.services;
 
-import com.projects.My_Instagram.DTOs.PostRequest;
+import com.projects.My_Instagram.DTOs.request.PostRequest;
 import com.projects.My_Instagram.exceptions.PostNotFoundException;
 import com.projects.My_Instagram.exceptions.UserNotFoundException;
 import com.projects.My_Instagram.models.Post;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static com.projects.My_Instagram.Constants.ExceptionMessages.*;
+import static com.projects.My_Instagram.constants.exception.ExceptionMessages.*;
 
 @Service
 public class PostService {

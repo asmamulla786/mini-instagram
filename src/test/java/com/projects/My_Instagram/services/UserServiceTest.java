@@ -1,6 +1,6 @@
 package com.projects.My_Instagram.services;
 
-import com.projects.My_Instagram.DTOs.UserRequest;
+import com.projects.My_Instagram.DTOs.request.UserRequest;
 import com.projects.My_Instagram.exceptions.UserNameExistsException;
 import com.projects.My_Instagram.exceptions.UserNameNullException;
 import com.projects.My_Instagram.exceptions.UserNotFoundException;
@@ -17,7 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static com.projects.My_Instagram.Constants.ExceptionMessages.*;
+import static com.projects.My_Instagram.constants.exception.ExceptionMessages.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,7 +39,6 @@ class UserServiceTest {
         Mockito.when(userRepository.existsByUsername("asma_123")).thenReturn(false);
 
         Mockito.when(userRepository.save(Mockito.any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(new User());
         User user = userService.createUser(userRequest);
 
         Assertions.assertEquals(userRequest.getUsername(), user.getUsername());

@@ -1,4 +1,4 @@
-package com.projects.My_Instagram.DTOs;
+package com.projects.My_Instagram.DTOs.request;
 
 public class PostRequest {
     private String caption;

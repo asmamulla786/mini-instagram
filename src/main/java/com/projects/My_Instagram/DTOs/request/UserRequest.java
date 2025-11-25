@@ -1,9 +1,18 @@
-package com.projects.My_Instagram.DTOs;
+package com.projects.My_Instagram.DTOs.request;
 
 public class UserRequest {
     private String fullName;
     private String username;
     private String profilePicUrl;
+    private String password;
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public String getFullName() {
         return fullName;

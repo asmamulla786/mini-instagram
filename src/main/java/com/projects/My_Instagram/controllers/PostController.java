@@ -1,6 +1,6 @@
 package com.projects.My_Instagram.controllers;
 
-import com.projects.My_Instagram.DTOs.PostRequest;
+import com.projects.My_Instagram.DTOs.request.PostRequest;
 import com.projects.My_Instagram.models.Post;
 import com.projects.My_Instagram.services.PostService;
 import org.springframework.web.bind.annotation.*;

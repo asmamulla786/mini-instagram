@@ -1,6 +1,7 @@
 package com.projects.My_Instagram.controllers;
 
-import com.projects.My_Instagram.DTOs.UserRequest;
+import com.projects.My_Instagram.DTOs.request.UserRequest;
+import com.projects.My_Instagram.DTOs.response.UserResponse;
 import com.projects.My_Instagram.models.User;
 import com.projects.My_Instagram.services.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -17,22 +18,22 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(@RequestBody UserRequest user){
+    public UserResponse createUser(@RequestBody UserRequest user){
         return userService.createUser(user);
     }
 
     @GetMapping("/{id}")
-    public User getUser(@PathVariable Long id){
+    public UserResponse getUser(@PathVariable Long id){
         return userService.getUserById(id);
     }
 
     @GetMapping
-    public List<User> getAllUsers(){
+    public List<UserResponse> getAllUsers(){
         return userService.getAllUsers();
     }
 
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody UserRequest updatedUser){
+    public UserResponse updateUser(@PathVariable Long id, @RequestBody UserRequest updatedUser){
         return userService.updateUser(id, updatedUser);
     }
 
