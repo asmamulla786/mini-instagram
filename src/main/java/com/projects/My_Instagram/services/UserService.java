@@ -6,6 +6,7 @@ import com.projects.My_Instagram.exceptions.PasswordNullException;
 import com.projects.My_Instagram.exceptions.UserNameExistsException;
 import com.projects.My_Instagram.exceptions.UserNameNullException;
 import com.projects.My_Instagram.exceptions.UserNotFoundException;
+import com.projects.My_Instagram.helper.UserHelper;
 import com.projects.My_Instagram.repositories.UserRepository;
 import com.projects.My_Instagram.models.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,21 +35,11 @@ public class UserService {
         setPassword(user,newUser.getPassword());
         user.setFullName(newUser.getFullName());
         user.setProfilePicUrl(newUser.getProfilePicUrl());
-
+        user.setRole("USER");
 
         User createdUser = userRepository.save(user);
 
-        return formUserResponse(createdUser);
-    }
-
-    private UserResponse formUserResponse(User createdUser) {
-        UserResponse userResponse = new UserResponse();
-        userResponse.setId(createdUser.getId());
-        userResponse.setFullName(createdUser.getFullName());
-        userResponse.setProfilePicUrl(createdUser.getProfilePicUrl());
-        userResponse.setUsername(createdUser.getUsername());
-
-        return userResponse;
+        return UserHelper.formUserResponse(createdUser);
     }
 
     private void setPassword(User user, String password) {
@@ -76,7 +67,7 @@ public class UserService {
     public UserResponse getUserById(Long id) {
         User user = getUser(id);
 
-        return formUserResponse(user);
+        return UserHelper.formUserResponse(user);
     }
 
     private User getUser(Long id) {
@@ -86,7 +77,7 @@ public class UserService {
     public List<UserResponse> getAllUsers() {
         List<UserResponse> allUsers = new ArrayList<>();
         for (User user : userRepository.findAll()) {
-            allUsers.add(formUserResponse(user));
+            allUsers.add(UserHelper.formUserResponse(user));
         }
 
         return allUsers;
@@ -100,7 +91,7 @@ public class UserService {
         existingUser.setProfilePicUrl(updatedUser.getProfilePicUrl());
 
         User user = userRepository.save(existingUser);
-        return formUserResponse(user);
+        return UserHelper.formUserResponse(user);
     }
 
     public void deleteUser(Long id) {

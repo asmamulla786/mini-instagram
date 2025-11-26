@@ -19,6 +19,17 @@ public class User {
     private String password;
     private String fullName;
     private String profilePicUrl;
+    @Column(nullable = false)
+    private String role = "USER";
+
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 
     public String getPassword() {
         return password;
@@ -26,7 +37,10 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
-    };
+    }
+
+    ;
+
     public Long getId() {
         return id;
     }
