@@ -20,14 +20,14 @@ public class User {
     private String fullName;
     private String profilePicUrl;
     @Column(nullable = false)
-    private String role = "USER";
+    private Role role = Role.USER;
 
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 

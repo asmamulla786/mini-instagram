@@ -5,7 +5,7 @@ import com.projects.My_Instagram.DTOs.request.UserRequest;
 import com.projects.My_Instagram.DTOs.response.AuthResponse;
 import com.projects.My_Instagram.DTOs.response.SignUpResponse;
 import com.projects.My_Instagram.DTOs.response.UserResponse;
-import com.projects.My_Instagram.helper.UserHelper;
+import com.projects.My_Instagram.helper.Helper;
 import com.projects.My_Instagram.jwt.JwtUtil;
 import com.projects.My_Instagram.models.User;
 import com.projects.My_Instagram.services.UserService;
@@ -61,7 +61,7 @@ public class AuthController {
         String username = authentication.getName();
         User user = userService.findUserByUserName(username);
 
-        return ResponseEntity.ok(UserHelper.formUserResponse(user));
+        return ResponseEntity.ok(Helper.formUserResponse(user));
     }
 }
 

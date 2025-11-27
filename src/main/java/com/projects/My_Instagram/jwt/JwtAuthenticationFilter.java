@@ -30,6 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        System.out.println("JWT Filter invoked for request: " + request.getRequestURI());
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -41,20 +42,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String username = jwtUtil.extractUsername(token);
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            if (jwtUtil.isTokenValid(token, userDetails.getUsername())) {
+            try {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                if (jwtUtil.isTokenValid(token, userDetails.getUsername())) {
 
-                Claims claims = jwtUtil.extractAllClaims(token);
-                List<String> roles = claims.get("roles", List.class);
+                    Claims claims = jwtUtil.extractAllClaims(token);
+                    List<String> roles = claims.get("roles", List.class);
 
-                List<SimpleGrantedAuthority> authorities = roles.stream()
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
+                    List<SimpleGrantedAuthority> authorities = roles != null 
+                            ? roles.stream()
+                                    .map(SimpleGrantedAuthority::new)
+                                    .collect(Collectors.toList())
+                            : userDetails.getAuthorities().stream()
+                                    .map(a -> new SimpleGrantedAuthority(a.getAuthority()))
+                                    .collect(Collectors.toList());
+                    
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
 
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
+            } catch (Exception e) {
+                System.err.println("Error processing JWT token: " + e.getMessage());
+                e.printStackTrace();
             }
-
         }
 
         filterChain.doFilter(request, response);
