@@ -19,7 +19,7 @@ public class FollowRequest {
     @JoinColumn(name = "targetUser_id")
     private User targetUser;
     @Enumerated(EnumType.STRING)
-    private FollowRequestStates status;
+    private FollowRequestStatus status;
     private Date requestedAt;
 
     public Long getId() {
@@ -46,11 +46,11 @@ public class FollowRequest {
         this.targetUser = targetUser;
     }
 
-    public FollowRequestStates getStatus() {
+    public FollowRequestStatus getStatus() {
         return status;
     }
 
-    public void setStatus(FollowRequestStates status) {
+    public void setStatus(FollowRequestStatus status) {
         this.status = status;
     }
 

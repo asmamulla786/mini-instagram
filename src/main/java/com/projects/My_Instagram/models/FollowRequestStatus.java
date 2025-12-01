@@ -1,6 +1,6 @@
 package com.projects.My_Instagram.models;
 
-public enum FollowRequestStates {
+public enum FollowRequestStatus {
     PENDING,
     ACCEPTED,
     REJECTED

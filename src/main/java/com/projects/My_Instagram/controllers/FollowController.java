@@ -1,5 +1,6 @@
 package com.projects.My_Instagram.controllers;
 
+import com.projects.My_Instagram.DTOs.response.FollowRequestResponse;
 import com.projects.My_Instagram.DTOs.response.UserResponse;
 import com.projects.My_Instagram.services.FollowService;
 import org.springframework.web.bind.annotation.*;
@@ -33,5 +34,10 @@ public class FollowController {
     @GetMapping("/following")
     public List<UserResponse> getFollowing(){
         return followService.getFollowing();
+    }
+
+    @GetMapping("/follow-requests")
+    public List<FollowRequestResponse> getAllFollowRequests(){
+        return followService.getAllFollowRequests();
     }
 }
