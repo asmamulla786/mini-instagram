@@ -28,6 +28,28 @@ public class User {
     private Role role = Role.USER;
     @OneToMany(mappedBy = "commentedUser", cascade = CascadeType.ALL)
     private List<Comment> comments;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_following",
+            joinColumns = @JoinColumn(name = "follower_id"),
+            inverseJoinColumns = @JoinColumn(name = "following_id")
+    )
+    private Set<User> following = new HashSet<>();
+
+    @ManyToMany(mappedBy = "following")
+    private Set<User> followers = new HashSet<>();
+
+    private Boolean privateAccount;
+
+    public Boolean getPrivateAccount() {
+        return privateAccount;
+    }
+
+    public void setPrivateAccount(Boolean privateAccount) {
+        this.privateAccount = privateAccount;
+    }
+
     public List<Post> getPosts() {
         return posts;
     }

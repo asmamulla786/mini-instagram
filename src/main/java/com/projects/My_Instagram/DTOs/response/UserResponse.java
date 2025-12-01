@@ -5,6 +5,15 @@ public class UserResponse {
     private String username;
     private String fullName;
     private String profilePicUrl;
+    private Boolean privateAccount;
+
+    public Boolean getPrivateAccount() {
+        return privateAccount;
+    }
+
+    public void setPrivateAccount(Boolean privateAccount) {
+        this.privateAccount = privateAccount;
+    }
 
     public Long getId() {
         return id;
@@ -37,4 +46,5 @@ public class UserResponse {
     public void setProfilePicUrl(String profilePicUrl) {
         this.profilePicUrl = profilePicUrl;
     }
+
 }

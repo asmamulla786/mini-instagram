@@ -30,14 +30,14 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public UserResponse createUser(UserRequest newUser) {
+    public UserResponse createUser(UserRequest signupRequest) {
         User user = new User();
-        setUserName(user, newUser.getUsername());
-        setPassword(user,newUser.getPassword());
-        user.setFullName(newUser.getFullName());
-        user.setProfilePicUrl(newUser.getProfilePicUrl());
+        setUserName(user, signupRequest.getUsername());
+        setPassword(user,signupRequest.getPassword());
+        user.setFullName(signupRequest.getFullName());
+        user.setProfilePicUrl(signupRequest.getProfilePicUrl());
         user.setRole(Role.USER);
-
+        user.setPrivateAccount(signupRequest.getPrivateAccount());
         User createdUser = userRepository.save(user);
 
         return Helper.formUserResponse(createdUser);

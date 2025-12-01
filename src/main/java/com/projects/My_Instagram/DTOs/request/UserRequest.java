@@ -6,6 +6,16 @@ public class UserRequest {
     private String profilePicUrl;
     private String password;
 
+    public Boolean getPrivateAccount() {
+        return privateAccount;
+    }
+
+    public void setPrivateAccount(Boolean privateAccount) {
+        this.privateAccount = privateAccount;
+    }
+
+    private Boolean privateAccount;
+
     public String getPassword() {
         return password;
     }

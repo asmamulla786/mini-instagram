@@ -17,6 +17,7 @@ public class Helper {
         userResponse.setFullName(createdUser.getFullName());
         userResponse.setProfilePicUrl(createdUser.getProfilePicUrl());
         userResponse.setUsername(createdUser.getUsername());
+        userResponse.setPrivateAccount(createdUser.getPrivateAccount());
 
         return userResponse;
     }
