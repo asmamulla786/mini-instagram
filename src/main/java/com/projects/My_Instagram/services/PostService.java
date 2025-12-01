@@ -11,6 +11,8 @@ import com.projects.My_Instagram.models.User;
 import com.projects.My_Instagram.repositories.PostRepository;
 import com.projects.My_Instagram.repositories.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static com.projects.My_Instagram.constants.exception.ExceptionMessages.*;
+import static com.projects.My_Instagram.constants.response.ResponseMessages.*;
 
 @Service
 public class PostService {
@@ -56,6 +59,17 @@ public class PostService {
     }
 
     public void deletePost(Long post_id) {
+        Post post = fetchPost(post_id);
+        User currectUser = fetchCurrectUser();
+
+        if(!Objects.equals(post.getUser().getUsername(), currectUser.getUsername())){
+            throw new AccessDeniedException(UNAUTHORIZED.getMessage());
+        }
+
+        postRepository.deleteById(post_id);
+    }
+
+    private Post fetchPost(Long post_id) {
         Optional<Post> post = postRepository.findById(post_id);
 
         if(post.isEmpty()){
@@ -63,13 +77,7 @@ public class PostService {
         }
 
         Post post1 = post.get();
-        User currectUser = fetchCurrectUser();
-
-        if(!Objects.equals(post1.getUser().getUsername(), currectUser.getUsername())){
-            throw new AccessDeniedException(UNAUTHORIZED.getMessage());
-        }
-
-        postRepository.deleteById(post_id);
+        return post1;
     }
 
     public List<PostResponse> getAllPostOfUser(String username){
@@ -87,4 +95,33 @@ public class PostService {
         User user = fetchCurrectUser();
         postRepository.deleteByUser(user);
     }
+
+    public ResponseEntity<String> likePost(Long post_id){
+        User currectUser = fetchCurrectUser();
+        Post post = fetchPost(post_id);
+        if (post.getLikedUsers().contains(currectUser)){
+            return ResponseEntity.status(HttpStatus.OK).body(ALREADY_LIKED.getMessage());
+        }
+
+        post.getLikedUsers().add(currectUser);
+        currectUser.getLikedPosts().add(post);
+
+        postRepository.save(post);
+        return ResponseEntity.status(HttpStatus.CREATED).body(LIKED_SUCCESSFULLY.getMessage());
+    }
+
+    public ResponseEntity<String> unlikePost(Long post_id){
+        User currectUser = fetchCurrectUser();
+        Post post = fetchPost(post_id);
+        if (!post.getLikedUsers().contains(currectUser)){
+            return ResponseEntity.status(HttpStatus.OK).body(NOT_LIKED.getMessage());
+        }
+
+        post.getLikedUsers().remove(currectUser);
+        currectUser.getLikedPosts().remove(post);
+
+        postRepository.save(post);
+        return ResponseEntity.status(HttpStatus.OK).body(UNLIKED_SUCCESSFULLY.getMessage());
+    }
+
 }

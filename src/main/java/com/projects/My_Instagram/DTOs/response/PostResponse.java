@@ -7,6 +7,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class PostResponse{
     private Long id;
@@ -14,6 +17,15 @@ public class PostResponse{
     private String imageUrl;
     private LocalDateTime uploadedAt;
 
+    public List<String> getLikedUsers() {
+        return likedUsers;
+    }
+
+    public void setLikedUsers(List<String> likedUsers) {
+        this.likedUsers = likedUsers;
+    }
+
+    private List<String> likedUsers;
     public UserResponse getUser() {
         return user;
     }

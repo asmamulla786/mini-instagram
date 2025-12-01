@@ -2,8 +2,8 @@ package com.projects.My_Instagram.controllers;
 
 import com.projects.My_Instagram.DTOs.request.PostRequest;
 import com.projects.My_Instagram.DTOs.response.PostResponse;
-import com.projects.My_Instagram.models.Post;
 import com.projects.My_Instagram.services.PostService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -43,5 +43,15 @@ public class PostController {
     @DeleteMapping
     public void deleteAllPostsOfUser() {
         postService.deleteAllPostOfUser();
+    }
+
+    @PostMapping("{post_id}/like")
+    public ResponseEntity<String> likePost(@PathVariable Long post_id){
+        return postService.likePost(post_id);
+    }
+
+    @DeleteMapping("{post_id}/unlike")
+    public ResponseEntity<String> unlikePost(@PathVariable Long post_id){
+        return postService.unlikePost(post_id);
     }
 }

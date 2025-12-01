@@ -3,6 +3,9 @@ package com.projects.My_Instagram.models;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "posts")
@@ -25,6 +28,18 @@ public class Post {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+    @ManyToMany(mappedBy = "likedPosts")
+    private Set<User> likedUsers = new HashSet<>();
+    @OneToMany(mappedBy = "commentedPost", cascade = CascadeType.ALL)
+    private List<Comment> comments;
+    public Set<User> getLikedUsers() {
+        return likedUsers;
+    }
+
+    public void setLikedUsers(Set<User> likedUsers) {
+        this.likedUsers = likedUsers;
+    }
+
 
     public String getCaption() {
         return caption;
