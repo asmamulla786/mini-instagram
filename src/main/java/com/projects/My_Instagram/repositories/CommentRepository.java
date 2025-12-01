@@ -1,4 +1,10 @@
 package com.projects.My_Instagram.repositories;
 
-public class CommentRepository {
+import com.projects.My_Instagram.models.Comment;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface CommentRepository extends JpaRepository<Comment, Long> {
+    List<Comment> findByCommentedPostId(Long postId);
 }

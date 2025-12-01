@@ -7,7 +7,8 @@ public enum ExceptionMessages {
     USER_NAME_NULL("User Should Not be null"),
     PASS_WORD_NUll("Password is mandatory"),
     INVALID_CREDENTIALS("Invalid username or password"),
-    UNAUTHORIZED("Access denied: You do not have permission to delete this post.");
+    UNAUTHORIZED("Access denied: You do not have permission to delete this."),
+    COMMENT_NOT_FOUND("Comment not found");
 
     private final String message;
 
