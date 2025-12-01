@@ -17,11 +17,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping
-    public UserResponse createUser(@RequestBody UserRequest user){
-        return userService.createUser(user);
-    }
-
     @GetMapping("/{id}")
     public UserResponse getUser(@PathVariable Long id){
         return userService.getUserById(id);
@@ -35,10 +30,5 @@ public class UserController {
     @PutMapping("/{id}")
     public UserResponse updateUser(@PathVariable Long id, @RequestBody UserRequest updatedUser){
         return userService.updateUser(id, updatedUser);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Long id){
-        userService.deleteUser(id);
     }
 }
