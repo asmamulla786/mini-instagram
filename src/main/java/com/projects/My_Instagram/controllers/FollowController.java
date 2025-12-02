@@ -3,6 +3,7 @@ package com.projects.My_Instagram.controllers;
 import com.projects.My_Instagram.DTOs.response.FollowRequestResponse;
 import com.projects.My_Instagram.DTOs.response.UserResponse;
 import com.projects.My_Instagram.services.FollowService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,12 +18,12 @@ public class FollowController {
     }
 
     @PostMapping("/{username}/follow")
-    public String followUser(@PathVariable String username){
+    public ResponseEntity<String> followUser(@PathVariable String username){
         return followService.followUser(username);
     }
 
     @DeleteMapping("/{username}/unfollow")
-    public String unfollowUser(@PathVariable String username){
+    public ResponseEntity<String> unfollowUser(@PathVariable String username){
         return followService.unfollowUser(username);
     }
 
@@ -39,5 +40,15 @@ public class FollowController {
     @GetMapping("/follow-requests")
     public List<FollowRequestResponse> getAllFollowRequests(){
         return followService.getAllFollowRequests();
+    }
+
+    @PatchMapping("/follow/{username}/accept")
+    public ResponseEntity<String> acceptFollowRequest(@PathVariable String username){
+        return followService.acceptFollowRequest(username);
+    }
+
+    @PatchMapping("/follow/{username}/reject")
+    public ResponseEntity<String> rejectFollowRequest(@PathVariable String username){
+        return followService.rejectFollowRequest(username);
     }
 }

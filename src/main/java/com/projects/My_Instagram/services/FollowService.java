@@ -2,6 +2,9 @@ package com.projects.My_Instagram.services;
 
 import com.projects.My_Instagram.DTOs.response.FollowRequestResponse;
 import com.projects.My_Instagram.DTOs.response.UserResponse;
+import com.projects.My_Instagram.constants.exception.ExceptionMessages;
+import com.projects.My_Instagram.constants.response.ResponseMessages;
+import com.projects.My_Instagram.exceptions.AppException;
 import com.projects.My_Instagram.helper.Helper;
 import com.projects.My_Instagram.helper.UserUtils;
 import com.projects.My_Instagram.models.FollowRequest;
@@ -9,6 +12,8 @@ import com.projects.My_Instagram.models.FollowRequestStatus;
 import com.projects.My_Instagram.models.User;
 import com.projects.My_Instagram.repositories.FollowRequestRepository;
 import com.projects.My_Instagram.repositories.UserRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,31 +32,32 @@ public class FollowService {
         this.followRequestRepository = followRequestRepository;
     }
 
-    public String followUser(String username) {
+    public ResponseEntity<String> followUser(String username) {
         User currectUser = userUtils.fetchCurrectUser();
         User user = userUtils.fetchUser(username);
 
         if (currectUser.getId().equals(user.getId())) {
-            return "You can't follow yourself";   //todo - Need to extract strings to class
+            throw new AppException(ExceptionMessages.FOLLOW_SELF.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
         if (currectUser.getFollowing().contains(user)) {
-            return "You are already following the user";  //todo - Need to extract strings to class
+            throw new AppException(ExceptionMessages.ALREADY_FOLLOWING.getMessage(), HttpStatus.CONFLICT);
         }
 
         if (user.getPrivateAccount()) {
             return sendFollowRequest(currectUser, user);
         }
+
         currectUser.getFollowing().add(user);
         user.getFollowers().add(currectUser);
 
         userRepository.save(currectUser);
         userRepository.save(user);
 
-        return "User successfully added to your following list";  //todo - Need to extract strings to class
+        return ResponseEntity.status(HttpStatus.CREATED).body(ResponseMessages.FOLLOW_SUCCESS.getMessage());
     }
 
-    private String sendFollowRequest(User requester, User targetUser) {
+    private ResponseEntity<String> sendFollowRequest(User requester, User targetUser) {
         boolean alreadyRequested = followRequestRepository
                 .existsByRequesterAndTargetUserAndStatus(
                         requester,
@@ -59,9 +65,10 @@ public class FollowService {
                         FollowRequestStatus.PENDING);
 
 
-        if(alreadyRequested){
-            return "You already requested";  //todo - Need to extract strings to class
+        if (alreadyRequested) {
+            throw new AppException(ExceptionMessages.ALREADY_REQUESTED.getMessage(), HttpStatus.CONFLICT);
         }
+
         FollowRequest request = new FollowRequest();
         request.setRequester(requester);
         request.setTargetUser(targetUser);
@@ -70,15 +77,15 @@ public class FollowService {
 
         followRequestRepository.save(request);
 
-        return "Follow request sent to " + targetUser.getUsername();  //todo - Need to extract strings to class
+        return  ResponseEntity.status(HttpStatus.CREATED).body(ResponseMessages.FOLLOW_REQUEST_SENT.getMessage());
     }
 
-    public String unfollowUser(String username) {
+    public ResponseEntity<String> unfollowUser(String username) {
         User currectUser = userUtils.fetchCurrectUser();
         User user = userUtils.fetchUser(username);
 
         if (!currectUser.getFollowing().contains(user)) {
-            return "You are not following the user";  //todo - Need to extract strings to class
+            throw new AppException(ExceptionMessages.NOT_FOLLOWING.getMessage(), HttpStatus.NOT_FOUND);
         }
 
         currectUser.getFollowing().remove(user);
@@ -87,7 +94,7 @@ public class FollowService {
         userRepository.save(currectUser);
         userRepository.save(user);
 
-        return "Unfollowed successfully";  //todo - Need to extract strings to class
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseMessages.UNFOLLOW_SUCCESS.getMessage());
     }
 
     public List<UserResponse> getFollowers() {
@@ -114,9 +121,53 @@ public class FollowService {
         User user = userUtils.fetchCurrectUser();
         List<FollowRequestResponse> followRequests = new ArrayList<>();
         for (FollowRequest followRequest : followRequestRepository.findByTargetUserAndStatus(user, FollowRequestStatus.PENDING)) {
-            followRequests.add(new FollowRequestResponse(followRequest.getRequester().getUsername(),followRequest.getRequestedAt()));
+            followRequests.add(new FollowRequestResponse(followRequest.getRequester().getUsername(), followRequest.getRequestedAt()));
         }
 
         return followRequests;
+    }
+
+    public ResponseEntity<String> acceptFollowRequest(String username) {
+        User currectUser = userUtils.fetchCurrectUser();
+        List<FollowRequest> followRequests = followRequestRepository.findByTargetUserAndStatus(currectUser, FollowRequestStatus.PENDING);
+
+        FollowRequest followRequest = findFollowRequest(username, followRequests);
+
+        if (followRequest == null)
+            throw new AppException(ExceptionMessages.FOLLOW_REQUEST_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
+
+        User requester = followRequest.getRequester();
+        currectUser.getFollowers().add(requester);
+        requester.getFollowing().add(currectUser);
+
+        userRepository.save(currectUser);
+        userRepository.save(requester);
+
+        followRequestRepository.delete(followRequest);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseMessages.FOLLOW_REQUEST_ACCEPTED.getMessage());
+    }
+
+    public ResponseEntity<String> rejectFollowRequest(String username) {
+        User currectUser = userUtils.fetchCurrectUser();
+        List<FollowRequest> followRequests = followRequestRepository.findByTargetUserAndStatus(currectUser, FollowRequestStatus.PENDING);
+
+        FollowRequest followRequest = findFollowRequest(username, followRequests);
+
+        if (followRequest == null)
+            throw new AppException(ExceptionMessages.FOLLOW_REQUEST_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
+
+        followRequestRepository.delete(followRequest);
+
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseMessages.FOLLOW_REQUEST_REJECTED.getMessage());
+    }
+
+    private  FollowRequest findFollowRequest(String username, List<FollowRequest> followRequests) {
+
+        return followRequests
+                .stream()
+                .filter(req -> req.getRequester().getUsername().equals(username))
+                .findFirst()
+                .orElse(null);
     }
 }
