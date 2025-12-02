@@ -3,9 +3,11 @@ package com.projects.My_Instagram.services;
 import com.projects.My_Instagram.DTOs.request.PostRequest;
 import com.projects.My_Instagram.DTOs.response.PostResponse;
 import com.projects.My_Instagram.exceptions.AccessDeniedException;
+import com.projects.My_Instagram.exceptions.AppException;
 import com.projects.My_Instagram.exceptions.PostNotFoundException;
 import com.projects.My_Instagram.exceptions.UserNotFoundException;
 import com.projects.My_Instagram.helper.Helper;
+import com.projects.My_Instagram.helper.UserUtils;
 import com.projects.My_Instagram.models.Post;
 import com.projects.My_Instagram.models.User;
 import com.projects.My_Instagram.repositories.PostRepository;
@@ -30,10 +32,12 @@ import static com.projects.My_Instagram.constants.response.ResponseMessages.*;
 public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final UserUtils userUtils;
 
-    public PostService(PostRepository postRepository, UserRepository userRepository) {
+    public PostService(PostRepository postRepository, UserRepository userRepository, UserUtils userUtils) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.userUtils = userUtils;
     }
 
     private User getUser(String username) {
@@ -59,7 +63,7 @@ public class PostService {
     }
 
     public void deletePost(Long post_id) {
-        Post post = fetchPost(post_id);
+        Post post = userUtils.fetchPost(post_id);
         User currectUser = fetchCurrectUser();
 
         if(!Objects.equals(post.getUser().getUsername(), currectUser.getUsername())){
@@ -67,17 +71,6 @@ public class PostService {
         }
 
         postRepository.deleteById(post_id);
-    }
-
-    private Post fetchPost(Long post_id) {
-        Optional<Post> post = postRepository.findById(post_id);
-
-        if(post.isEmpty()){
-            throw new PostNotFoundException(POST_NOT_FOUND.getMessage());
-        }
-
-        Post post1 = post.get();
-        return post1;
     }
 
     public List<PostResponse> getAllPostOfUser(String username){
@@ -98,7 +91,13 @@ public class PostService {
 
     public ResponseEntity<String> likePost(Long post_id){
         User currectUser = fetchCurrectUser();
-        Post post = fetchPost(post_id);
+        Post post = userUtils.fetchPost(post_id);
+        User postOwner = post.getUser();
+
+        if(postOwner.getPrivateAccount() && !postOwner.getFollowers().contains(currectUser) && !postOwner.getId().equals(currectUser.getId())){
+            throw new AppException(YOU_CANNOT_LIKE.getMessage(), HttpStatus.UNAUTHORIZED);
+        }
+
         if (post.getLikedUsers().contains(currectUser)){
             return ResponseEntity.status(HttpStatus.OK).body(ALREADY_LIKED.getMessage());
         }
@@ -112,7 +111,7 @@ public class PostService {
 
     public ResponseEntity<String> unlikePost(Long post_id){
         User currectUser = fetchCurrectUser();
-        Post post = fetchPost(post_id);
+        Post post = userUtils.fetchPost(post_id);
         if (!post.getLikedUsers().contains(currectUser)){
             return ResponseEntity.status(HttpStatus.OK).body(NOT_LIKED.getMessage());
         }
