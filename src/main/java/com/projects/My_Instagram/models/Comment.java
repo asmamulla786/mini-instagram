@@ -18,6 +18,14 @@ public class Comment {
     @ManyToOne
     private Post commentedPost;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getContent() {
         return content;
     }

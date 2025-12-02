@@ -4,7 +4,9 @@ import com.projects.My_Instagram.DTOs.response.CommentResponse;
 import com.projects.My_Instagram.exceptions.AccessDeniedException;
 import com.projects.My_Instagram.exceptions.CommentNotFoundException;
 import com.projects.My_Instagram.exceptions.PostNotFoundException;
+import com.projects.My_Instagram.helper.UserUtils;
 import com.projects.My_Instagram.models.Comment;
+import com.projects.My_Instagram.models.Post;
 import com.projects.My_Instagram.models.User;
 import com.projects.My_Instagram.repositories.CommentRepository;
 import com.projects.My_Instagram.repositories.PostRepository;
@@ -26,11 +28,13 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final UserUtils userUtils;
 
-    public CommentService(CommentRepository commentRepository, UserRepository userRepository, PostRepository postRepository) {
+    public CommentService(CommentRepository commentRepository, UserRepository userRepository, PostRepository postRepository, UserUtils userUtils) {
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
         this.postRepository = postRepository;
+        this.userUtils = userUtils;
     }
 
     public ResponseEntity<CommentResponse> createComment(Long postId, String content) {
@@ -39,7 +43,8 @@ public class CommentService {
         comment.setContent(content);
         comment.setUploadedAt(new Date());
         comment.setCommentedUser(currentUser);
-        comment.setCommentedPost(postRepository.findById(postId).get());
+        Post commentedPost = userUtils.fetchPost(postId);
+        comment.setCommentedPost(commentedPost);
         Comment savedComment = commentRepository.save(comment);
         return ResponseEntity.status(HttpStatus.CREATED).body(formCommentResponse(savedComment));
     }
